@@ -1,20 +1,13 @@
 <?php
-/**
- * Products route.
- *
- * @internal This API is used internally by Blocks--it is still in flux and may be subject to revisions.
- * @package WooCommerce/Blocks
- */
-
 namespace Automattic\WooCommerce\Blocks\StoreApi\Routes;
-
-defined( 'ABSPATH' ) || exit;
 
 use Automattic\WooCommerce\Blocks\StoreApi\Utilities\Pagination;
 use Automattic\WooCommerce\Blocks\StoreApi\Utilities\ProductQuery;
 
 /**
  * Products class.
+ *
+ * @internal This API is used internally by Blocks--it is still in flux and may be subject to revisions.
  */
 class Products extends AbstractRoute {
 	/**
@@ -34,9 +27,10 @@ class Products extends AbstractRoute {
 	public function get_args() {
 		return [
 			[
-				'methods'  => \WP_REST_Server::READABLE,
-				'callback' => [ $this, 'get_response' ],
-				'args'     => $this->get_collection_params(),
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => [ $this, 'get_response' ],
+				'permission_callback' => '__return_true',
+				'args'                => $this->get_collection_params(),
 			],
 			'schema' => [ $this->schema, 'get_public_item_schema' ],
 		];
@@ -314,11 +308,15 @@ class Products extends AbstractRoute {
 		);
 
 		$params['stock_status'] = array(
-			'description'       => __( 'Limit result set to products with specified stock status.', 'woocommerce' ),
-			'type'              => 'string',
-			'enum'              => array_keys( wc_get_product_stock_status_options() ),
-			'sanitize_callback' => 'sanitize_text_field',
-			'validate_callback' => 'rest_validate_request_arg',
+			'description' => __( 'Limit result set to products with specified stock status.', 'woocommerce' ),
+			'type'        => 'array',
+			'items'       => array(
+				'type'              => 'string',
+				'enum'              => array_keys( wc_get_product_stock_status_options() ),
+				'sanitize_callback' => 'sanitize_text_field',
+				'validate_callback' => 'rest_validate_request_arg',
+			),
+			'default'     => [],
 		);
 
 		$params['attributes'] = array(

@@ -3,10 +3,8 @@
  */
 import { Component } from '@wordpress/element';
 import { createHigherOrderComponent } from '@wordpress/compose';
-import { compareWithWpVersion } from '@woocommerce/settings';
-
-const { getBlockType } = wp.blocks;
-const { addFilter } = wp.hooks;
+import { getBlockType } from '@wordpress/blocks';
+import { addFilter } from '@wordpress/hooks';
 
 /**
  * withDefaultAttributes HOC for editor.BlockListBlock.
@@ -89,10 +87,8 @@ const withDefaultAttributes = createHigherOrderComponent(
  * as defining `attributes` during block registration, you must also declare an
  * array called `defaults`. Defaults should be omitted from `attributes`.
  */
-if ( compareWithWpVersion( '5.3', '<=' ) ) {
-	addFilter(
-		'editor.BlockListBlock',
-		'woocommerce-blocks/block-list-block',
-		withDefaultAttributes
-	);
-}
+addFilter(
+	'editor.BlockListBlock',
+	'woocommerce-blocks/block-list-block',
+	withDefaultAttributes
+);

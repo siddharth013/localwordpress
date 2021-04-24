@@ -3,7 +3,6 @@
  */
 import { __ } from '@wordpress/i18n';
 import {
-	Fragment,
 	useState,
 	useEffect,
 	useCallback,
@@ -25,6 +24,17 @@ import FilterSubmitButton from '../filter-submit-button';
  * Price slider component.
  *
  * @param {Object} props Component props.
+ * @param {number} props.minPrice Minimum price for slider.
+ * @param {number} props.maxPrice Maximum price for slider.
+ * @param {number} props.minConstraint Minimum constraint.
+ * @param {number} props.maxConstraint Maximum constraint.
+ * @param {function(any):any} props.onChange Function to call on the change event.
+ * @param {number} props.step What step values the slider uses.
+ * @param {Object} props.currency Currency configuration object.
+ * @param {boolean} props.showInputFields Whether to show input fields for the values or not.
+ * @param {boolean} props.showFilterButton Whether to show the filter button for the slider.
+ * @param {boolean} props.isLoading Whether values are loading or not.
+ * @param {function():any} props.onSubmit Function to call when submit event fires.
  */
 const PriceSlider = ( {
 	minPrice,
@@ -101,7 +111,6 @@ const PriceSlider = ( {
 		minConstraint,
 		maxConstraint,
 		hasValidConstraints,
-		stepValue,
 	] );
 
 	/**
@@ -175,7 +184,14 @@ const PriceSlider = ( {
 				parseInt( values[ 1 ], 10 ),
 			] );
 		},
-		[ minPrice, maxPrice, minConstraint, maxConstraint, stepValue ]
+		[
+			onChange,
+			minPrice,
+			maxPrice,
+			minConstraint,
+			maxConstraint,
+			stepValue,
+		]
 	);
 
 	/**
@@ -210,20 +226,17 @@ const PriceSlider = ( {
 				parseInt( values[ 1 ], 10 ),
 			] );
 		},
-		[
-			minConstraint,
-			maxConstraint,
-			stepValue,
-			minPriceInput,
-			maxPriceInput,
-			currency,
-		]
+		[ onChange, stepValue, minPriceInput, maxPriceInput ]
 	);
 
 	const classes = classnames(
 		'wc-block-price-filter',
+		'wc-block-components-price-slider',
 		showInputFields && 'wc-block-price-filter--has-input-fields',
+		showInputFields && 'wc-block-components-price-slider--has-input-fields',
 		showFilterButton && 'wc-block-price-filter--has-filter-button',
+		showFilterButton &&
+			'wc-block-components-price-slider--has-filter-button',
 		isLoading && 'is-loading',
 		! hasValidConstraints && 'is-disabled'
 	);
@@ -236,19 +249,19 @@ const PriceSlider = ( {
 	return (
 		<div className={ classes }>
 			<div
-				className="wc-block-price-filter__range-input-wrapper"
+				className="wc-block-price-filter__range-input-wrapper wc-block-components-price-slider__range-input-wrapper"
 				onMouseMove={ findClosestRange }
 				onFocus={ findClosestRange }
 			>
 				{ hasValidConstraints && (
 					<div aria-hidden={ showInputFields }>
 						<div
-							className="wc-block-price-filter__range-input-progress"
+							className="wc-block-price-filter__range-input-progress wc-block-components-price-slider__range-input-progress"
 							style={ progressStyles }
 						/>
 						<input
 							type="range"
-							className="wc-block-price-filter__range-input wc-block-price-filter__range-input--min"
+							className="wc-block-price-filter__range-input wc-block-price-filter__range-input--min wc-block-components-price-slider__range-input wc-block-components-price-slider__range-input--min"
 							aria-label={ __(
 								'Filter products by minimum price',
 								'woocommerce'
@@ -268,7 +281,7 @@ const PriceSlider = ( {
 						/>
 						<input
 							type="range"
-							className="wc-block-price-filter__range-input wc-block-price-filter__range-input--max"
+							className="wc-block-price-filter__range-input wc-block-price-filter__range-input--max wc-block-components-price-slider__range-input wc-block-components-price-slider__range-input--max"
 							aria-label={ __(
 								'Filter products by maximum price',
 								'woocommerce'
@@ -289,13 +302,13 @@ const PriceSlider = ( {
 					</div>
 				) }
 			</div>
-			<div className="wc-block-price-filter__controls">
+			<div className="wc-block-price-filter__controls wc-block-components-price-slider__controls">
 				{ showInputFields && (
-					<Fragment>
+					<>
 						<FormattedMonetaryAmount
 							currency={ currency }
 							displayType="input"
-							className="wc-block-price-filter__amount wc-block-price-filter__amount--min wc-block-form-text-input"
+							className="wc-block-price-filter__amount wc-block-price-filter__amount--min wc-block-form-text-input wc-block-components-price-slider__amount wc-block-components-price-slider__amount--min"
 							aria-label={ __(
 								'Filter products by minimum price',
 								'woocommerce'
@@ -313,7 +326,7 @@ const PriceSlider = ( {
 						<FormattedMonetaryAmount
 							currency={ currency }
 							displayType="input"
-							className="wc-block-price-filter__amount wc-block-price-filter__amount--max wc-block-form-text-input"
+							className="wc-block-price-filter__amount wc-block-price-filter__amount--max wc-block-form-text-input wc-block-components-price-slider__amount wc-block-components-price-slider__amount--max"
 							aria-label={ __(
 								'Filter products by maximum price',
 								'woocommerce'
@@ -328,31 +341,29 @@ const PriceSlider = ( {
 							disabled={ isLoading || ! hasValidConstraints }
 							value={ maxPriceInput }
 						/>
-					</Fragment>
+					</>
 				) }
 				{ ! showInputFields &&
 					! isLoading &&
 					Number.isFinite( minPrice ) &&
 					Number.isFinite( maxPrice ) && (
-						<div className="wc-block-price-filter__range-text">
+						<div className="wc-block-price-filter__range-text wc-block-components-price-slider__range-text">
 							{ __( 'Price', 'woocommerce' ) }
 							: &nbsp;
 							<FormattedMonetaryAmount
 								currency={ currency }
-								displayType="text"
 								value={ minPrice }
 							/>
 							&nbsp;&ndash;&nbsp;
 							<FormattedMonetaryAmount
 								currency={ currency }
-								displayType="text"
 								value={ maxPrice }
 							/>
 						</div>
 					) }
 				{ showFilterButton && (
 					<FilterSubmitButton
-						className="wc-block-price-filter__button"
+						className="wc-block-price-filter__button wc-block-components-price-slider__button"
 						disabled={ isLoading || ! hasValidConstraints }
 						onClick={ onSubmit }
 						screenReaderLabel={ __(

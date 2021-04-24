@@ -1,18 +1,10 @@
 <?php
-/**
- * Cart remove item route.
- *
- * @package WooCommerce/Blocks
- */
-
 namespace Automattic\WooCommerce\Blocks\StoreApi\Routes;
-
-defined( 'ABSPATH' ) || exit;
-
-use Automattic\WooCommerce\Blocks\StoreApi\Utilities\CartController;
 
 /**
  * CartRemoveItem class.
+ *
+ * @internal This API is used internally by Blocks--it is still in flux and may be subject to revisions.
  */
 class CartRemoveItem extends AbstractCartRoute {
 	/**
@@ -32,9 +24,10 @@ class CartRemoveItem extends AbstractCartRoute {
 	public function get_args() {
 		return [
 			[
-				'methods'  => \WP_REST_Server::CREATABLE,
-				'callback' => [ $this, 'get_response' ],
-				'args'     => [
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => [ $this, 'get_response' ],
+				'permission_callback' => '__return_true',
+				'args'                => [
 					'key' => [
 						'description' => __( 'Unique identifier (key) for the cart item.', 'woocommerce' ),
 						'type'        => 'string',
@@ -53,15 +46,15 @@ class CartRemoveItem extends AbstractCartRoute {
 	 * @return \WP_REST_Response
 	 */
 	protected function get_route_post_response( \WP_REST_Request $request ) {
-		$controller = new CartController();
-		$cart       = $controller->get_cart_instance();
-		$cart_item  = $controller->get_cart_item( $request['key'] );
+		$cart      = $this->cart_controller->get_cart_instance();
+		$cart_item = $this->cart_controller->get_cart_item( $request['key'] );
 
-		if ( ! $cart_item ) {
+		if ( empty( $cart_item ) ) {
 			throw new RouteException( 'woocommerce_rest_cart_invalid_key', __( 'Cart item no longer exists or is invalid.', 'woocommerce' ), 409 );
 		}
 
 		$cart->remove_cart_item( $request['key'] );
+		$this->maybe_release_stock();
 
 		return rest_ensure_response( $this->schema->get_item_response( $cart ) );
 	}

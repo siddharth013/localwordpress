@@ -20,12 +20,17 @@ const Option = ( { checked, name, onChange, option } ) => {
 
 	return (
 		<label
-			className="wc-block-radio-control__option"
+			className={ classnames(
+				'wc-block-components-radio-control__option',
+				{
+					'wc-block-components-radio-control__option-checked': checked,
+				}
+			) }
 			htmlFor={ `${ name }-${ value }` }
 		>
 			<input
 				id={ `${ name }-${ value }` }
-				className="wc-block-radio-control__input"
+				className="wc-block-components-radio-control__input"
 				type="radio"
 				name={ name }
 				value={ value }

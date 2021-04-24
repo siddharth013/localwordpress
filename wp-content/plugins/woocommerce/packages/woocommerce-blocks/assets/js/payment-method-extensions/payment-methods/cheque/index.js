@@ -12,7 +12,7 @@ import { decodeEntities } from '@wordpress/html-entities';
 import { PAYMENT_METHOD_NAME } from './constants';
 
 const settings = getSetting( 'cheque_data', {} );
-const defaultLabel = __( 'Check Payment', 'woocommerce' );
+const defaultLabel = __( 'Check payment', 'woocommerce' );
 const label = decodeEntities( settings.title ) || defaultLabel;
 
 /**
@@ -23,7 +23,7 @@ const label = decodeEntities( settings.title ) || defaultLabel;
  * Content component
  */
 const Content = () => {
-	return <div>{ decodeEntities( settings.description || '' ) }</div>;
+	return decodeEntities( settings.description || '' );
 };
 
 /**
@@ -33,7 +33,7 @@ const Content = () => {
  */
 const Label = ( props ) => {
 	const { PaymentMethodLabel } = props.components;
-	return <PaymentMethodLabel icon="checkPayment" text={ label } />;
+	return <PaymentMethodLabel text={ label } />;
 };
 
 /**
@@ -44,9 +44,11 @@ const offlineChequePaymentMethod = {
 	label: <Label />,
 	content: <Content />,
 	edit: <Content />,
-	icons: null,
 	canMakePayment: () => true,
 	ariaLabel: label,
+	supports: {
+		features: settings?.supports ?? [],
+	},
 };
 
-registerPaymentMethod( ( Config ) => new Config( offlineChequePaymentMethod ) );
+registerPaymentMethod( offlineChequePaymentMethod );

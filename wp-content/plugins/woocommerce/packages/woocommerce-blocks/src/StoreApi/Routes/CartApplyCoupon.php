@@ -1,18 +1,10 @@
 <?php
-/**
- * Cart apply coupon route.
- *
- * @package WooCommerce/Blocks
- */
-
 namespace Automattic\WooCommerce\Blocks\StoreApi\Routes;
-
-defined( 'ABSPATH' ) || exit;
-
-use Automattic\WooCommerce\Blocks\StoreApi\Utilities\CartController;
 
 /**
  * CartApplyCoupon class.
+ *
+ * @internal This API is used internally by Blocks--it is still in flux and may be subject to revisions.
  */
 class CartApplyCoupon extends AbstractCartRoute {
 	/**
@@ -32,9 +24,10 @@ class CartApplyCoupon extends AbstractCartRoute {
 	public function get_args() {
 		return [
 			[
-				'methods'  => \WP_REST_Server::CREATABLE,
-				'callback' => [ $this, 'get_response' ],
-				'args'     => [
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => [ $this, 'get_response' ],
+				'permission_callback' => '__return_true',
+				'args'                => [
 					'code' => [
 						'description' => __( 'Unique identifier for the coupon within the cart.', 'woocommerce' ),
 						'type'        => 'string',
@@ -57,12 +50,11 @@ class CartApplyCoupon extends AbstractCartRoute {
 			throw new RouteException( 'woocommerce_rest_cart_coupon_disabled', __( 'Coupons are disabled.', 'woocommerce' ), 404 );
 		}
 
-		$controller  = new CartController();
-		$cart        = $controller->get_cart_instance();
+		$cart        = $this->cart_controller->get_cart_instance();
 		$coupon_code = wc_format_coupon_code( wp_unslash( $request['code'] ) );
 
 		try {
-			$controller->apply_coupon( $coupon_code );
+			$this->cart_controller->apply_coupon( $coupon_code );
 		} catch ( \WC_REST_Exception $e ) {
 			throw new RouteException( $e->getErrorCode(), $e->getMessage(), $e->getCode() );
 		}
