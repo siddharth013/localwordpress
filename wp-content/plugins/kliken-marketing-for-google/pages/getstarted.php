@@ -25,15 +25,15 @@ defined( 'ABSPATH' ) || exit;
 </style>
 
 <div class="wrap kk-wrapper">
-	<h2><?php esc_html_e( 'Google Ads for WooCommerce', 'kliken-marketing-for-google' ); ?></h2>
+	<h2><?php esc_html_e( 'Google Ads & Marketing by Kliken', 'kliken-marketing-for-google' ); ?></h2>
 
 	<p><?php esc_html_e( 'Launch Google Shopping Ads and get your products found online easily.', 'kliken-marketing-for-google' ); ?></p>
 
 	<div class="kk-box">
 		<div class="kk-box-header">
 			<div class="kk-img-container">
-				<img src="https://d9hhrg4mnvzow.cloudfront.net/start.kliken.com/woo/40c24363-googleheader-logo.svg" alt="Google Logo" height="40" class="kk-google-img">
-				<img src="https://d9hhrg4mnvzow.cloudfront.net/start.kliken.com/woo/1ab26a95-powderedbykliken_03600c03500c000000.png" alt="Powered by Kliken" class="kk-poweredby-img">
+				<img src="https://msacdn.s3.amazonaws.com/images/logos/woocommerce/GoogleHeader-Logo.svg" alt="Google Logo" height="40" class="kk-google-img">
+				<img src="https://msacdn.s3.amazonaws.com/images/logos/woocommerce/PoweredByKliken.png" alt="Powered by Kliken" class="kk-poweredby-img">
 			</div>
 		</div>
 
